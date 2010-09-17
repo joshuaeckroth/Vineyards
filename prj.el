@@ -1,0 +1,23 @@
+(jde-project-file-version "1.0")
+(jde-set-variables
+ '(jde-sourcepath 
+   (quote 
+    ("$PROJECTS_HOME/src/"
+     "$HOME/Documents/hostgis/gwt-2.0.3/gwt-user.jar"
+     "$HOME/Documents/hostgis/gwt-2.0.3/gwt-dev.jar" 
+     "$HOME/Documents/hostgis/smartgwt-2.2/smartgwt.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-api-1.7.1-sources.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-command-1.7.1-sources.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-plugin-staticsecurity-1.7.1-sources.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-plugin-staticsecurity-gwt-1.7.1-sources.jar"
+     "$JAVA_HOME/src.zip")))
+ '(jde-global-classpath 
+   (quote 
+    ("$HOME/Documents/hostgis/gwt-2.0.3/gwt-user.jar" 
+     "$HOME/Documents/hostgis/gwt-2.0.3/gwt-dev.jar"
+     "$HOME/Documents/hostgis/smartgwt-2.2/smartgwt.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-api-1.7.1.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-command-1.7.1.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-gwt-client-1.7.1.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-plugin-staticsecurity-1.7.1.jar"
+     "$HOME/Documents/hostgis/geomajas/geomajas-plugin-staticsecurity-gwt-1.7.1.jar"))))

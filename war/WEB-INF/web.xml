@@ -8,6 +8,14 @@
     <param-value>
       classpath:vineyard/app/hibernate/applicationContext.xml
       classpath:vineyard/app/hibernate/layerVineyards.xml
+      classpath:vineyard/app/hibernate/security.xml
+    </param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>preloadClasses</param-name>
+    <param-value>
+      org.geomajas.plugin.staticsecurity.command.dto.LoginRequest
     </param-value>
   </context-param>
 

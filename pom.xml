@@ -108,11 +108,29 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.0</version>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.6.0</version>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>1.6.0</version>
+      <classifier>sources</classifier>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -124,6 +142,32 @@
       <groupId>org.geomajas.plugin</groupId>
       <artifactId>geomajas-layer-google</artifactId>
     </dependency>
+
+    <!-- Security -->
+    <dependency>
+      <groupId>org.geomajas.plugin</groupId>
+      <artifactId>geomajas-plugin-staticsecurity</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geomajas.plugin</groupId>
+      <artifactId>geomajas-plugin-staticsecurity-gwt</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geomajas.plugin</groupId>
+      <artifactId>geomajas-plugin-staticsecurity</artifactId>
+      <version>1.7.1</version>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.geomajas.plugin</groupId>
+      <artifactId>geomajas-plugin-staticsecurity-gwt</artifactId>
+      <version>1.7.1</version>
+      <classifier>sources</classifier>
+    </dependency>
+
+
   </dependencies>
 
   <build>
@@ -159,7 +203,7 @@
 	  <warSourceDirectory>war</warSourceDirectory>
 	  <disableCastChecking>true</disableCastChecking>
 	  <disableClassMetadata>true</disableClassMetadata>
-	  <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+	  <extraJvmArgs>-Xmx256M -Xss1024k</extraJvmArgs>
 	  <i18nConstantsWithLookupBundle>vineyard.app.client.i18n.Translation</i18nConstantsWithLookupBundle>
 	</configuration>
       </plugin>
@@ -202,6 +246,12 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-eclipse-plugin</artifactId>
 	<version>2.8</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
       </plugin>
 
     </plugins>
