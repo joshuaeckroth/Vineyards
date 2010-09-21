@@ -46,6 +46,7 @@ import org.geomajas.gwt.client.widget.Toolbar;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.smartgwt.client.types.HeaderControls;
 import com.smartgwt.client.types.Side;
@@ -75,8 +76,6 @@ import org.geomajas.plugin.staticsecurity.client.event.LogoutHandler;
 import org.geomajas.plugin.staticsecurity.client.event.LogoutSuccessEvent;
 import com.smartgwt.client.util.BooleanCallback;
 
-import com.google.gwt.core.client.GWT;
-
 /**
  * Entry point and main class for GWT application. This class defines the layout and functionality of this
  * application.
@@ -102,10 +101,54 @@ public class GeomajasEntryPoint implements EntryPoint {
         // Used for i18n in configuration files:
         I18nProvider.setLookUp(GWT.<ConstantsWithLookup>create(Translation.class));
 
-        VLayout mainLayout = new VLayout();
+        final VLayout mainLayout = new VLayout();
         mainLayout.setWidth100();
         mainLayout.setHeight100();
 
+        // If not logged in, show login button
+        if(Authentication.getInstance().getUserId() == null) {
+
+
+            final LoginWindow lw = new LoginWindow();
+            final IButton loginButton = new IButton("Log in");
+            loginButton.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        lw.setAutoCenter(true);
+                        lw.setIsModal(true);
+                        lw.setShowModalMask(true);
+                        lw.setShowMinimizeButton(false);
+                        lw.setShowMaximizeButton(false);
+                        lw.show();
+                    }
+                });
+
+            final LoginHandler lh = new LoginHandler() {
+                    public void onLoginFailure(LoginFailureEvent event) {
+                    }
+                    public void onLoginSuccess(LoginSuccessEvent event) {
+                        mainLayout.removeMember(loginButton);
+                        lw.hide();
+                        drawMainInterface(mainLayout);
+                    }
+                };
+            
+            final LogoutHandler lo = new LogoutHandler() {
+                    public void onLogoutFailure(LogoutFailureEvent event) {
+                    }
+                    public void onLogoutSuccess(LogoutSuccessEvent event) {
+                    }
+                };
+            Authentication.getInstance().addLoginHandler(lh);
+            Authentication.getInstance().addLogoutHandler(lo);
+
+            mainLayout.addMember(loginButton);
+            mainLayout.draw();
+        } else {
+            drawMainInterface(mainLayout);
+        }
+    }
+
+    private void drawMainInterface(VLayout mainLayout) {
         // ---------------------------------------------------------------------
         // Top bar:
         // ---------------------------------------------------------------------
@@ -118,73 +161,50 @@ public class GeomajasEntryPoint implements EntryPoint {
         icon.setSize(24);
         topBar.addMember(icon);
         topBar.addSpacer(6);
-
+        
         Label title = new Label("Vineyards");
         title.setStyleName("sgwtTitle");
         title.setWidth(300);
         topBar.addMember(title);
-
+        
         final Label userLabel = new Label();
         userLabel.setHeight(20);
         userLabel.setWidth100();
         userLabel.setPadding(3);
         userLabel.setBorder("1px solid #A0A0A0");
         topBar.addMember(userLabel);
-
-        final LoginHandler lh = new LoginHandler() {
-                public void onLoginFailure(LoginFailureEvent event) {
-                    GWT.log("Failure", null);
-                }
-                public void onLoginSuccess(LoginSuccessEvent event) {
-                    GWT.log("Success", null);
-                    userLabel.setContents("Logged in with: " + Authentication.getInstance().getUserId());
-                }
-            };
         
-        final LogoutHandler lo = new LogoutHandler() {
-                public void onLogoutFailure(LogoutFailureEvent event) {
-                }
-                public void onLogoutSuccess(LogoutSuccessEvent event) {
-                    userLabel.setContents("No user is logged in.");
-                }
-            };
-        Authentication.getInstance().addLoginHandler(lh);
-        Authentication.getInstance().addLogoutHandler(lo);
+        userLabel.setContents("Logged in with: " + Authentication.getInstance().getUserId());
 
-        IButton loginButton = new IButton("Log in");
-        loginButton.addClickHandler(new ClickHandler() {
+        IButton logoutButton = new IButton("Log out");
+        logoutButton.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
-                    LoginWindow lw = new LoginWindow(lh);
-                    lw.setAutoCenter(true);
-                    lw.setIsModal(true);
-                    lw.setShowModalMask(true);
-                    lw.setShowMinimizeButton(false);
-                    lw.setShowMaximizeButton(false);
-                    lw.show();
-                }
-            });
-        topBar.addMember(loginButton);
-
-        Authentication.getInstance().login("josh", "josh", null);
-                
+                    Authentication.getInstance().logout(new BooleanCallback() {
+                            public void execute(Boolean success) {
+                                if(success) { Location.reload(); }
+                            }
+                        });
+                }});
+        topBar.addMember(logoutButton);
+        
         topBar.addFill();
         topBar.addMember(new LocaleSelect("English"));
-
+        
         mainLayout.addMember(topBar);
-
+        
         HLayout layout = new HLayout();
         layout.setWidth100();
         layout.setHeight100();
         layout.setMembersMargin(5);
         layout.setMargin(5);
-
+        
         // ---------------------------------------------------------------------
         // Create the left-side (map and tabs):
         // ---------------------------------------------------------------------
         map = new MapWidget("sampleFeaturesMap", "gwt-simple");
         final Toolbar toolbar = new Toolbar(map);
         toolbar.setButtonSize(Toolbar.BUTTON_SIZE_BIG);
-
+        
         VLayout mapLayout = new VLayout();
         mapLayout.setShowResizeBar(true);
         mapLayout.setResizeBarTarget("mytabs");
@@ -195,14 +215,14 @@ public class GeomajasEntryPoint implements EntryPoint {
         tabSet.setWidth100();
         tabSet.setHeight("35%");
         tabSet.setID("mytabs");
-
+        
         VLayout leftLayout = new VLayout();
         leftLayout.setShowEdges(true);
         leftLayout.addMember(mapLayout);
         leftLayout.addMember(tabSet);
-
+        
         layout.addMember(leftLayout);
-
+        
         // ---------------------------------------------------------------------
         // Create the right-side (overview map, layer-tree, legend):
         // ---------------------------------------------------------------------
@@ -212,49 +232,44 @@ public class GeomajasEntryPoint implements EntryPoint {
         sectionStack.setCanReorderSections(true);
         sectionStack.setCanResizeSections(false);
         sectionStack.setSize("250px", "100%");
-
+        
         // Overview map layout:
         SectionStackSection section1 = new SectionStackSection("Overview map");
         section1.setExpanded(true);
         overviewMap = new OverviewMap("sampleOverviewMap", "gwt-simple", map, true, true);
         section1.addItem(overviewMap);
         sectionStack.addSection(section1);
-
+        
         // LayerTree layout:
         SectionStackSection section2 = new SectionStackSection("Layer tree");
         section2.setExpanded(true);
         LayerTree layerTree = new LayerTree(map);
         section2.addItem(layerTree);
         sectionStack.addSection(section2);
-
+        
         // Legend layout:
         SectionStackSection section3 = new SectionStackSection("Legend");
         section3.setExpanded(true);
         legend = new Legend(map.getMapModel());
         section3.addItem(legend);
         sectionStack.addSection(section3);
-
+        
         // Putting the right side layouts together:
         layout.addMember(sectionStack);
-
+        
         // ---------------------------------------------------------------------
         // Bottom left: Add tabs here:
         // ---------------------------------------------------------------------
         FeatureListGridPage page1 = new FeatureListGridPage(map);
         addTab(new SearchPage(map, tabSet, page1.getTable()));
         addTab(page1);
-
+        
         // ---------------------------------------------------------------------
         // Finally draw everything:
         // ---------------------------------------------------------------------
         mainLayout.addMember(layout);
-        mainLayout.draw();
-
-        // Install a loading screen
-        // This only works if the application initially shows a map with at least 1 vector layer:
-        LoadingScreen loadScreen = new LoadingScreen(map, "Hello...");
-        loadScreen.draw();
-
+        mainLayout.redraw();
+        
         // Then initialize:
         initialize();
     }
